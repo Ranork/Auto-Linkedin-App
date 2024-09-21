@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Linkedin App</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-primary">
+  
+  <div class="my-4 mx-5 p-3 bg-light rounded-4">
+    <div class="p-3 mb-4">
+      <img src="img/auto-linkedin-app-header.png" style="max-width: 100%;" alt="">
+    </div>
+
+    <h2 class="login-header">Sign In with Linkedin Account</h2>
+
+    <hr class="mb-3">
+
+    <div class="p-2">
+      <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="login-email" placeholder="name@example.com">
+        <label for="login-email">Email address</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="login-password" placeholder="Password">
+        <label for="login-password">Password</label>
+      </div>
+      <hr>
+      <div class="form-floating">
+        <select class="form-select" id="language-select" aria-label="Floating label select example"  style="height: 40px; font-size: 11px; padding-top: 10px; padding-bottom: 0;">
+          <option value="EN" selected>English</option>
+          <option value="TR">Turkish</option>
+        </select>
+        <label for="language-select" style="padding: 8px 10px; font-size: 15px;">Language</label>
+      </div>
+    </div>
+
+    <div class="text-center mb-3">
+      <button onclick="login()" type="button" class="btn btn-primary btn-login">Sign in</button>
+    </div>
+
+    <hr>
+
+    <p class="login-information">Your account informations saved inside your local computer only. Feel free to inspect the app's code, visit <a href="#">github page</a>.</p>
+
+    <div class="login-footer">
+      <a href="#"><i class="fa-brands fa-github"></i> ranork/auto-linkedin-app</a>
+    </div>
+
+    </div>
+    
+  </div>
+
+
+  <div class="modal fade" id="loginConsole" tabindex="-1" aria-labelledby="loginConsoleLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="loginConsoleLabel">Signing In</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="console" class="console"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <script src="js/languages.js"></script>
+  <script>
+    
+    const { LinkedIn } = require('auto-linkedin');
+    const toastr = require('toastr');
+    const { ipcRenderer } = require('electron');
+
+
+    function logger(msg) {
+      document.getElementById('console').insertAdjacentHTML('beforebegin', msg + '<br>')
+    }
+
+
+
+    const client = new LinkedIn(
+      { headless: true },
+      { COOLDOWN_MIN: 15, COOLDOWN_MAX: 30 },
+      logger
+    )
+
+    console.log(client);
+
+
+    async function login() {
+      const loginginModal = new bootstrap.Modal(document.getElementById('loginConsole'))
+      loginginModal.show()
+
+      let lang = document.getElementById('language-select').value
+      client.linkedinSettings = {
+        ...client.linkedinSettings,
+        ...languages[lang].linkedinSettings
+      }
+      
+      let email = document.getElementById('login-email').value
+      let pass = document.getElementById('login-password').value
+
+      if (email.length <= 3) return toastr.error('Email is so short to be true...', 'Validation Error')
+      if (pass.length <= 3) return toastr.error('Password is so short to be true...', 'Validation Error')
+
+      try { await client.login(email, pass) }
+      catch (e) { 
+        loginginModal.hide()
+        return toastr.error(e.message, 'Login Error') 
+      }
+      ipcRenderer.send('load-hub');
+    }
+
+
+  </script>
+
+
+</body>
+</html>

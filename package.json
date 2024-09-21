@@ -1,0 +1,21 @@
+{
+  "name": "auto-linkedin-app",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "electron": "^32.1.2"
+  },
+  "dependencies": {
+    "auto-linkedin": "^1.3.1",
+    "jquery": "^3.7.1",
+    "toastr": "^2.1.4"
+  }
+}

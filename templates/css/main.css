@@ -1,0 +1,53 @@
+
+:root {
+  --primary: #0077B5;
+  --primary_dark: #015b8c;
+  
+}
+
+
+.bg-primary {
+  background-color: var(--primary) !important;
+}
+
+
+.btn-primary {
+  background-color: var(--primary) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary_dark) !important;
+}
+
+.btn-login {
+  width: 80%;
+  border-radius: 25px;
+  padding: 10px;
+}
+
+
+.login-header {
+  font-size: 18px;
+}
+
+.login-information {
+  font-size: 12px;
+}
+
+.login-footer {
+  text-align: center;
+  font-size: 14px;
+}
+
+.login-footer a {
+  text-decoration: none;
+  color: black;
+}
+
+
+.console {
+  font-size: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  max-height: 400px;
+  overflow-y: scroll;
+}
