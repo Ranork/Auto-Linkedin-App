@@ -5,7 +5,7 @@ const fs = require('fs');
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 540,
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
@@ -17,21 +17,21 @@ const createWindow = () => {
 
   
   ipcMain.on('load-hub', () => {
-    win.setSize(800, 600)
+    win.setSize(800, 540)
     win.loadFile('templates/hub.html');
   });
   
   ipcMain.on('load-login', () => {
-    try { fs.renameSync('cache/cookies.json') }
+    try { fs.rmSync('cache/cookies.json') }
     catch (e) { console.error(e); }
 
-    win.setSize(500, 645)
+    win.setSize(500, 700)
     win.loadFile('templates/login.html');
   });
 
   
   if (!fs.existsSync('cache/cookies.json'))  {
-    win.setSize(500, 645)
+    win.setSize(500, 700)
     win.loadFile('templates/login.html')
 
   }

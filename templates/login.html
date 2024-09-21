@@ -38,11 +38,11 @@
       </div>
       <hr>
       <div class="form-floating">
-        <select class="form-select" id="language-select" aria-label="Floating label select example"  style="height: 40px; font-size: 11px; padding-top: 10px; padding-bottom: 0;">
+        <select class="form-select" id="language-select" aria-label="Floating label select example"  style="height: 40px; font-size: 11px; padding-top: 13px; padding-bottom: 0;">
           <option value="EN" selected>English</option>
           <option value="TR">Turkish</option>
         </select>
-        <label for="language-select" style="padding: 8px 10px; font-size: 15px;">Language</label>
+        <label for="language-select" style="padding: 9px 10px; font-size: 15px;">Language</label>
       </div>
     </div>
 
@@ -87,7 +87,7 @@
 
 
     function logger(msg) {
-      document.getElementById('console').insertAdjacentHTML('beforebegin', msg + '<br>')
+      document.getElementById('console').insertAdjacentHTML('afterbegin', msg + '<br>')
     }
 
 

@@ -19,33 +19,172 @@
 <body>
   <nav class="navbar bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand"><img src="img/auto-linkedin-app-header.png" alt="" style="max-width: 200px;"></a>
+      <a class="navbar-brand"><img src="img/auto-linkedin-app-header.png" alt="" style="max-height: 35px;"></a>
       <div class="d-flex">
         
-        <div class="form-floating" style="width: 100px;">
-          <select class="form-select" id="language-select" aria-label="Floating label select example"  style="height: 40px; font-size: 11px; padding-top: 10px; padding-bottom: 0;">
+        <div class="form-floating" style="width: 120px;">
+          <select class="form-select" id="language-select" onchange="changeLanguage()" aria-label="Floating label select example"  style="height: 40px; font-size: 11px; padding-top: 13px; padding-bottom: 0;">
             <option value="EN" selected>English</option>
             <option value="TR">Turkish</option>
           </select>
-          <label for="language-select" style="padding: 8px 10px; font-size: 15px;">Language</label>
+          <label for="language-select" style="padding: 9px 10px; font-size: 15px;">Language</label>
         </div>
+
+        
+        <button type="button" onclick="logout()" class="btn btn-link btn-sm me-2"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
 
       </div>
     </div>
   </nav>
 
-  <script>
-    const { LinkedIn } = require('auto-linkedin');
 
-    const client = new LinkedIn(
-      { headless: true },
-      { COOLDOWN_MIN: 15, COOLDOWN_MAX: 30 }
-    )
+  <div class="content px-4 py-3">
+    <div class="row">
 
-    async function autoLogin() {
-      await client.login()
+      <div class="col-6 pb-2">
+        <div class="box" style="height: 50%;">
+          <h1><i class="fa-solid fa-person-running"></i> Active Tasks</h1>
+          <div class="divider"></div>
+          <div id="task-information">
+            <i>No active tasks</i>
+          </div>
+        </div>
+
+        <div class="box">
+          <h1><i class="fa-solid fa-terminal"></i> Output</h1>
+          <div class="divider"></div>
+          <div id="console" class="console" style="height: 115px;">
+
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="col-6">
+
+        <button class="btn btn-box" data-bs-toggle="modal" data-bs-target="#connectionRequestsModal">
+         <div class="box">
+           <h1><i class="fa-solid fa-handshake"></i> Connection Requests</h1>
+           <div class="divider"></div>
+           <p>Send bulk connection requests with search parameters</p>
+         </div>
+       </button>
+
+       <button class="btn btn-box">
+        <div class="box">
+          <h1><i class="fa-solid fa-eye"></i> Visit Profiles</h1>
+          <div class="divider"></div>
+          <p>Bulk profile visit with search parameters</p>
+        </div>
+      </button>
+       
+       <button class="btn btn-box">
+        <div class="box">
+          <h1><i class="fa-solid fa-envelope"></i> Company Invitations</h1>
+          <div class="divider"></div>
+          <p>Send bulk company invitations to new connections</p>
+        </div>
+      </button>
+       
+      <button class="btn btn-box">
+        <div class="box">
+          <h1><i class="fa-solid fa-message"></i> Send Messages</h1>
+          <div class="divider"></div>
+          <p>Send messages to new connections</p>
+        </div>
+      </button>
+
+    </div>
+
+    </div>
+  </div>
+
+
+  <footer class="bg-light py-1">
+    <div class="text-center fs-6">
+      <a href="#"><i class="fa-brands fa-github"></i> ranork/auto-linkedin-app</a> 
+      <span style="width: 50px; display: inline-block;"></span> 
+      <a href="#"><i class="fa-solid fa-earth-americas"></i> autolinkedin.akatron.net</a>
+    </div>
+  </footer>
+
+
+
+  <div class="modal fade" id="connectionRequestsModal" tabindex="-1" aria-labelledby="connectionRequestsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 80%;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="connectionRequestsModalLabel"><i class="fa-solid fa-handshake"></i> Connection Requests</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          
+        </div>
+        <div class="modal-footer">
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+<script src="js/languages.js"></script>
+<script>
+function logger(msg) {
+  document.getElementById('console').insertAdjacentHTML('afterbegin', msg.replaceAll(' ', '&nbsp;') + '<br>')
+}
+</script>
+
+<script>
+  const { LinkedIn } = require('auto-linkedin');
+  const { ipcRenderer } = require('electron');
+  const fs = require('fs');
+
+  const task_info = document.getElementById('task-information')
+
+  const client = new LinkedIn(
+    { headless: true },
+    { COOLDOWN_MIN: 15, COOLDOWN_MAX: 30 },
+    logger
+  )
+
+  async function autoLogin() {
+    let buttons = document.querySelectorAll(".btn")
+    for (let b of buttons) {
+      task_info.innerHTML = '<i>Logging in...</i>'
+      b.disabled = true
     }
-  </script>
+
+    try { await client.login() }
+    catch { logout() }
+    
+    for (let b of buttons) {
+      task_info.innerHTML = '<i>No active tasks</i>'
+      b.disabled = false
+    }
+
+  }
+
+  async function logout() {
+    ipcRenderer.send('load-login');
+  }
+
+  // autoLogin()
+
+  async function changeLanguage() {
+    let lang = document.getElementById('language-select').value
+    client.linkedinSettings = {
+      ...client.linkedinSettings,
+      ...languages[lang].linkedinSettings
+    }
+    logger('[SET] Lanugage changed to ' + lang)
+  }
+
+
+</script>
 
 </body>
 </html>
