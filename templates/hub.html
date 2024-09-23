@@ -102,9 +102,9 @@
 
   <footer class="bg-light py-1">
     <div class="text-center fs-6">
-      <a href="#"><i class="fa-brands fa-github"></i> ranork/auto-linkedin-app</a> 
+      <button class="btn btn-link" onclick="openExternal('https://github.com/Ranork/Auto-Linkedin-App')"><i class="fa-brands fa-github"></i> ranork/auto-linkedin-app</button> 
       <span style="width: 50px; display: inline-block;"></span> 
-      <a href="#"><i class="fa-solid fa-earth-americas"></i> autolinkedin.akatron.net</a>
+      <button class="btn btn-link" onclick="openExternal('https://autolinkedin.akatron.net/')"><i class="fa-solid fa-earth-americas"></i> autolinkedin.akatron.net</button>
     </div>
   </footer>
 
@@ -118,10 +118,74 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <a data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            <h2><i class="fa-solid fa-chevron-down"></i> Request Settings</h2>
+            <div class="divider"></div>
+          </a>
+          <div class="collapse" id="collapseExample">
+
+            <div class="row mt-2">
+              <div class="col-6">
+                <div class="mb-1">
+                  <label for="creq-limit" class="form-label">Limit: <span id="creq-limit-label" class="badge bg-secondary">20</span></label>
+                  <input type="range" onchange="creqChangeLimit()" class="form-range" min="1" max="50" step="1" value="20" id="creq-limit">
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="mb-1">
+                  <label for="creq-notes" class="form-label">Notes</label>
+                  <textarea class="form-control form-control-sm" id="creq-notes" rows="2"></textarea>
+                </div>
+              </div>
+            </div>
+
+          </div>
           
+          <div style="height: 10px;"></div>
+
+          <a data-bs-toggle="collapse" href="#collapsecreqFilters" role="button" aria-expanded="false" aria-controls="collapsecreqFilters">
+            <h2><i class="fa-solid fa-chevron-down"></i> Search Filters</h2>
+            <div class="divider"></div>
+          </a>
+          <div class="collapse show" id="collapsecreqFilters">
+
+            <div class="row">
+              <div class="col-12">
+                <div class="mb-1">
+                  <label for="creq-keywords" class="form-label">Keywords</label>
+                  <input type="text" class="form-control form-control-sm" id="creq-keywords" placeholder="Software Developer">
+                </div>
+              </div>
+
+              <div class="col-6">
+                <div class="mb-1">
+                  <label for="creq-network" class="form-label">Connection</label>
+                  <div class="btn-group d-flex">
+                    <button id="creq-network-1" onclick="creqChangeNetwork(1)" class="btn btn-primary btn-sm" id="">1.</button>
+                    <button id="creq-network-2" onclick="creqChangeNetwork(2)" class="btn btn-primary btn-sm active">2.</button>
+                    <button id="creq-network-3" onclick="creqChangeNetwork(3)" class="btn btn-primary btn-sm">3.+</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <div class="mb-1">
+                  <label for="creq-geourn" class="form-label">Location *</label>
+                  <input type="text" class="form-control form-control-sm" id="creq-geourn" placeholder="GeoUrn">
+                </div>
+              </div>
+
+            </div>
+            
+            <div class="fw-light mt-3" style="font-size: 12px;">
+              * Location: Geourn code from linkedin search parameters
+            </div>
+          </div>
+
+
         </div>
         <div class="modal-footer">
-          
+          <button onclick="creqStartTask()" type="button" class="btn btn-primary btn-sm"><i class="fa-solid fa-play"></i> Start Task</button>
         </div>
       </div>
     </div>
@@ -131,13 +195,16 @@
 
 
 
+<script src="js/misc.js"></script>
 <script src="js/languages.js"></script>
+
 <script>
 function logger(msg) {
   document.getElementById('console').insertAdjacentHTML('afterbegin', msg.replaceAll(' ', '&nbsp;') + '<br>')
 }
 </script>
 
+<!--* MAIN SCRIPT *-->
 <script>
   const { LinkedIn } = require('auto-linkedin');
   const { ipcRenderer } = require('electron');
@@ -183,6 +250,58 @@ function logger(msg) {
     logger('[SET] Lanugage changed to ' + lang)
   }
 
+
+</script>
+
+
+<!--* CONNECTION REQUEST *-->
+<script>
+  const toastr = require('toastr');
+
+  var creqNetwork = 'S'
+  function creqChangeNetwork(network) {
+      document.getElementById('creq-network-1').classList.remove('active')
+      document.getElementById('creq-network-2').classList.remove('active')
+      document.getElementById('creq-network-3').classList.remove('active')
+    if (network === 1) {
+      creqNetwork = 'F'
+      document.getElementById('creq-network-1').classList.add('active')
+    }
+    else if (network === 2) {
+      creqNetwork = 'S'
+      document.getElementById('creq-network-2').classList.add('active')
+    }
+    else if (network === 3) {
+      creqNetwork = 'B'
+      document.getElementById('creq-network-3').classList.add('active')
+    }
+  }
+
+  var creqLimit = 20
+  function creqChangeLimit() {
+    let limit = document.getElementById('creq-limit').value
+    creqLimit = parseInt(limit)
+    document.getElementById('creq-limit-label').innerHTML = limit
+  }
+
+  async function creqStartTask() {
+    const modal = new bootstrap.Modal(document.getElementById('connectionRequestsModal'))
+
+    let keywords = document.getElementById('creq-keywords').value
+    if (keywords.length < 2) return toastr.error('Keywords is too short.', 'Connection Request Error')
+
+    modal.hide()
+
+    creqTask({keywords, network: [creqNetwork]}, creqLimit)
+
+  }
+
+  async function creqTask(parameters, limit) {
+
+    let people = await client.searchPeople(parameters, limit)
+    logger(people.length)
+
+  }
 
 </script>
 

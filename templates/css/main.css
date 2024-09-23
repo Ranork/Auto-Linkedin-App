@@ -14,6 +14,7 @@ body {
 /* width */
 ::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
 }
 /* Track */
 ::-webkit-scrollbar-track {
@@ -48,11 +49,19 @@ body {
 .btn-primary:hover {
   background-color: var(--primary_dark) !important;
 }
+.btn-primary.active {
+  background-color: var(--primary_dark) !important;
+}
 
 .btn-login {
   width: 80%;
   border-radius: 25px;
   padding: 10px;
+}
+
+.btn-link {
+  padding: 2px;
+  margin: 0;
 }
 
 
@@ -95,7 +104,7 @@ a {
   color: var(--primary);
 }
 
-.box .divider {
+.divider {
   height: 1px;
   width: 100px;
   background-color: rgba(128, 128, 128, 0.554);
@@ -133,4 +142,20 @@ i {
 
 .btn-link {
   text-decoration: none;
+}
+
+
+.modal h2 {
+  font-size: 18px;
+}
+
+.modal label {
+  font-size: 15px;
+  margin-bottom: -5px;
+}
+
+
+.modal-header {
+  background-color: var(--primary);
+  color: white;
 }

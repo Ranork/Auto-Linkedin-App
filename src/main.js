@@ -36,6 +36,8 @@ const createWindow = () => {
 
   }
   else win.loadFile('templates/hub.html')
+
+  win.center();
 }
 
 
